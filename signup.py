@@ -15,10 +15,8 @@ class SignUpPage(Tk):
     PADY = 10
     FONT = ("TimesNewRoman", "14", "bold")
 
-    def __init__(self) -> None:
-        with open("usuarios.txt", "wb") as archive:
-            dump([], archive)
-        Tk.__init__(self)
+    def __init__(self, *args, **kwargs) -> None:
+        Tk.__init__(self, *args, **kwargs)
         self.title = "Sign up"
         self.geometry("450x600")
 
@@ -89,20 +87,24 @@ class SignUpPage(Tk):
         self.mainloop()
 
     def validate(self) -> None:
-        with open("usuarios.txt", "rb") as archive:
-            lista = [x.name for x in load(archive)]
-            if self.name_entry.get() == "" or self.birth_entry.get() == "" or self.email_entry.get() == "" or self.password_entry.get() == "" or self.conf_password_entry.get() == "":
-                self.messages_label["text"] = "Campo inválido"
+        try:
+            with open("usuarios.txt", "rb") as archive:
+                lista = [x.email for x in load(archive)]
+                if self.name_entry.get() == "" or self.birth_entry.get() == "" or self.email_entry.get() == "" or self.password_entry.get() == "" or self.conf_password_entry.get() == "":
+                    self.messages_label["text"] = "Campo inválido"
 
-            elif self.password_entry.get() != self.conf_password_entry.get():
-                self.messages_label["text"] = "As senhas não batem"
-            elif self.email_entry.get() in lista:
-                self.messages_label["text"] = "Email já pertence a um usuário"
-            else:
-                self.messages_label["text"] = ""
-                user = User(self.name_entry.get(), self.birth_entry.get(), self.email_entry.get(), self.password_entry.get())
-                self.save(user)
-                self.mostra_usuarios()
+                elif self.password_entry.get() != self.conf_password_entry.get():
+                    self.messages_label["text"] = "As senhas não batem"
+                elif self.email_entry.get() in lista:
+                    self.messages_label["text"] = "Email já pertence a um usuário"
+                else:
+                    self.messages_label["text"] = ""
+                    user = User(self.name_entry.get(), self.birth_entry.get(), self.email_entry.get(), self.password_entry.get())
+                    self.save(user)
+                    self.mostra_usuarios()
+        except:
+            with open("usuarios.txt", "wb") as archive:
+                dump([], archive)
 
 
     def save(self, user: User) -> None:
@@ -117,8 +119,3 @@ class SignUpPage(Tk):
         with open("usuarios.txt", "rb") as archive:
             for user in load(archive):
                 print(user.name)
-
-
-
-if __name__ == "__main__":
-    SignUpPage()

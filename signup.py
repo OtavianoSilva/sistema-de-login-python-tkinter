@@ -60,7 +60,7 @@ class SignUpPage(Tk):
         self.password_label = Label(self.password_frame, text="Senha", font=self.FONT)
         self.password_label.pack(side=LEFT)
 
-        self.password_entry = Entry(self.password_frame)
+        self.password_entry = Entry(self.password_frame, show='*')
         self.password_entry.pack(side=LEFT)
 
         # Confirmar senha
@@ -70,7 +70,7 @@ class SignUpPage(Tk):
         self.conf_password_label = Label(self.conf_password_frame, text="Confirme a senha", font=self.FONT)
         self.conf_password_label.pack(side=LEFT)
 
-        self.conf_password_entry = Entry(self.conf_password_frame)
+        self.conf_password_entry = Entry(self.conf_password_frame, show='*')
         self.conf_password_entry.pack(side=LEFT)
         
         # Botão de ação e mensagens
@@ -102,6 +102,7 @@ class SignUpPage(Tk):
                     user = User(self.name_entry.get(), self.birth_entry.get(), self.email_entry.get(), self.password_entry.get())
                     self.save(user)
                     self.mostra_usuarios()
+
         except:
             with open("usuarios.txt", "wb") as archive:
                 dump([], archive)

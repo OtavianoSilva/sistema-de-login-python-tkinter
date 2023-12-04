@@ -1,5 +1,6 @@
 from tkinter import *
 from pickle import *
+from list import ListPage
 
 class LoginPage(Tk):
     PADX = 10
@@ -31,7 +32,7 @@ class LoginPage(Tk):
         self.password_label = Label(self.password_frame, text="Senha", font=self.FONT)
         self.password_label.pack(side=LEFT)
 
-        self.password_entry = Entry(self.password_frame)
+        self.password_entry = Entry(self.password_frame, show='*')
         self.password_entry.pack(side=LEFT)
 
         # Confirmar senha
@@ -41,38 +42,40 @@ class LoginPage(Tk):
         self.conf_password_label = Label(self.conf_password_frame, text="Confirme a senha", font=self.FONT)
         self.conf_password_label.pack(side=LEFT)
 
-        self.conf_password_entry = Entry(self.conf_password_frame)
+        self.conf_password_entry = Entry(self.conf_password_frame, show='*')
         self.conf_password_entry.pack(side=LEFT)
         
-        # Botão de ação e mensagens
+        # Botão para entrar
         self.confim_frame = Frame(self)
         self.confim_frame.pack()
 
-        self.confirm_button = Button(self.confim_frame, text="Cadastrar", font=self.FONT)
+        self.confirm_button = Button(self.confim_frame, text="Entrar", font=self.FONT)
         self.confirm_button["command"] = self.validate
         self.confirm_button.pack()
 
         self.messages_label = Label(self.confim_frame, text="", font=self.FONT)
         self.messages_label.pack() 
 
+
         self.mainloop()
 
     def validate(self) -> None:
         try:
             with open("usuarios.txt", "rb") as archive:
-                lista = [x.email for x in load(archive)]
-                if self.name_entry.get() == "" or self.birth_entry.get() == "" or self.email_entry.get() == "" or self.password_entry.get() == "" or self.conf_password_entry.get() == "":
+                users = [x for x in load(archive)]
+                if self.name_entry.get() == "" or self.password_entry.get() == "" or self.conf_password_entry.get() == "":
                     self.messages_label["text"] = "Campo inválido"
 
                 elif self.password_entry.get() != self.conf_password_entry.get():
                     self.messages_label["text"] = "As senhas não batem"
-                elif self.email_entry.get() in lista:
-                    self.messages_label["text"] = "Email já pertence a um usuário"
+
                 else:
-                    self.messages_label["text"] = ""
-                    user = User(self.name_entry.get(), self.birth_entry.get(), self.email_entry.get(), self.password_entry.get())
-                    self.save(user)
-                    self.mostra_usuarios()
+                    for x in users:
+                        if x.name == self.name_entry.get() and x.password == self.password_entry.get():
+                            self.messages_label["text"] = ""
+                            ListPage()
+                    else:
+                        self.messages_label["text"] = "Usuário não encontrado"
         except:
             with open("usuarios.txt", "wb") as archive:
                 dump([], archive)
